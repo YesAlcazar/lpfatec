@@ -1,8 +1,12 @@
 from django.shortcuts import render,HttpResponse
+from .models import TodoItem
 
-# Create your models here.
+# Create your views here.
 def home(request):
     # return HttpResponse('Hello World!')
     return render(request, 'home.html')
 
-# Create your views here.
+def todos(request):
+    todos = TodoItem.objects.all()
+    return render(request, 'todos.html', {"todos":todos})
+
