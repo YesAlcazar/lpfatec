@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import DocumentoForm
 from .models import Documento, Escola
 import base64
+import binascii
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
@@ -19,9 +21,15 @@ def upload_documento(request):
         try:
             # Decodifica o ID da URL para obter o CNPJ e buscar a escola
             cnpj = base64.b64decode(escola_id_b64).decode('utf-8')
-            escola_instance = get_object_or_404(Escola, cnpj=cnpj)
-        except Exception:
-            messages.error(request, "Link de acesso inválido ou escola não encontrada.")
+            # Utiliza o get() para permitir capturar a exceção específica do Django caso não exista
+            escola_instance = Escola.objects.get(cnpj=cnpj)
+        except (binascii.Error, UnicodeDecodeError):
+            # Captura erro de decodificação caso o hash da URL esteja malformado
+            messages.error(request, "Link de acesso inválido.")
+            return redirect('DocumentRest:home')
+        except ObjectDoesNotExist:
+            # Captura exceção específica do Django quando o objeto não é encontrado no banco
+            messages.error(request, "Escola não encontrada.")
             return redirect('DocumentRest:home')
 
     if request.method == 'POST':

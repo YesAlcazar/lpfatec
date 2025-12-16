@@ -1,6 +1,49 @@
-Aqui está uma proposta de arquivo `README.md` (ou `INSTALL.md`) formatado em Markdown, pronto para ser colocado no seu repositório GitHub.
 
-Ele foi escrito com uma linguagem acessível, cobrindo desde a instalação do Python até o acesso por outros dispositivos na mesma rede Wi-Fi.
+## ✅ Funcionalidades do Projeto (Checklist)
+
+Abaixo listamos os Requisitos Funcionais (RF) planejados e o status atual de implementação neste protótipo:
+
+- [x] **RF001 — Cadastro de Escola Particular**
+  - *Implementação:* Modelo de dados `Escola` criado e populado via script de migração (20 escolas de exemplo). Gerenciamento via Django Admin.
+
+- [x] **RF002 — Autenticação/Autorização**
+  - *Implementação:* Utiliza o sistema de autenticação nativo do Django (`django.contrib.auth`) e painel administrativo.
+
+- [x] **RF003 — Upload de documentos e vinculação ao checklist**
+  - *Implementação:* Página de upload dedicada, suporte a tipos de documentos (AVCB, Alvarás, etc.), campo "Outros" dinâmico e validação de datas de vencimento (data específica ou ano).
+
+- [ ] **RF004 — OCR para leitura automática de vencimentos e classificação**
+  - *Status:* Não implementado.
+
+- [ ] **RF005 — Sistema de avisos (envio e histórico)**
+  - *Status:* Parcialmente atendido pela página "Arquivos a Vencer", que lista visualmente os documentos críticos. Envio de e-mails não implementado.
+
+- [ ] **RF006 — Agenda de inscrições/renovações e relatórios**
+  - *Status:* Não implementado.
+
+- [ ] **RF007 — Geração automática de Termo de Homologação (PDF)**
+  - *Status:* Não implementado.
+
+- [ ] **RF008 — Integração / envio ao Departamento Jurídico**
+  - *Status:* Não implementado.
+
+- [ ] **RF009 — Gestão de docentes**
+  - *Status:* Não implementado.
+
+- [x] **RF010 — Painel administrativo (visão geral)**
+  - *Implementação:* Dashboard na página inicial com uploads recentes e página "Arquivos a Vencer" filtrando documentos vencidos ou a vencer em 3 meses.
+
+- [x] **RF011 — Logs e trilha de auditoria**
+  - *Implementação:* Registro imutável de quem enviou (`responsavel_upload`) e quando (`data_hora_envio`) no modelo `Documento`.
+
+- [ ] **RF012 — Importação/Exportação de dados (CSV/Excel)**
+  - *Status:* Não implementado.
+
+- [ ] **RF013 — Permissões de acesso e despersonalização de dados**
+  - *Status:* Não implementado.
+
+- [x] **RF014 — Upload seguro e armazenamento de arquivos**
+  - *Implementação:* Uploads processados pelo Django, renomeação segura e restrição de edição após o envio (arquivos imutáveis).
 
 -----
 
