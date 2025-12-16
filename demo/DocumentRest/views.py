@@ -7,6 +7,7 @@ import base64
 import binascii
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+import re
 
 # Create your views here.
 def home(request):
@@ -87,3 +88,43 @@ def arquivos_a_vencer(request):
         'hoje': hoje,
     }
     return render(request, 'arquivos_a_vencer.html', context)
+
+def status_documentos(request):
+    # Busca todas as escolas e pré-carrega os documentos para otimizar a consulta
+    escolas_qs = Escola.objects.all().prefetch_related('documentos')
+
+    # Ordenação natural (Natural Sort) para que "Colégio 2" venha antes de "Colégio 10"
+    def natural_keys(text):
+        return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', text)]
+
+    escolas = sorted(escolas_qs, key=lambda x: natural_keys(x.nome_fantasia))
+    
+    # Define os tipos de documentos obrigatórios (excluindo 'OUTRO')
+    tipos_obrigatorios = [
+        (code, label) for code, label in Documento.TipoDocumento.choices 
+        if code != Documento.TipoDocumento.OUTRO
+    ]
+    tipos_obrigatorios.sort(key=lambda x: x[1])
+    
+    status_por_escola = []
+    for escola in escolas:
+        # Cria um conjunto com os tipos de documentos que a escola já enviou
+        docs_enviados = set(escola.documentos.values_list('tipo_documento', flat=True))
+        
+        checklist = []
+        entregues_count = 0
+        
+        for code, label in tipos_obrigatorios:
+            entregue = code in docs_enviados
+            if entregue:
+                entregues_count += 1
+            checklist.append({'label': label, 'entregue': entregue})
+            
+        status_por_escola.append({
+            'escola': escola,
+            'checklist': checklist,
+            'entregues_count': entregues_count,
+            'total_obrigatorio': len(tipos_obrigatorios)
+        })
+        
+    return render(request, 'status_documentos.html', {'status_por_escola': status_por_escola})

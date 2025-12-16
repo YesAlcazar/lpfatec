@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %} Status de Documentos {% endblock %}
+{% block content %}
+<h2>Status de Entrega de Documentos</h2>
+<p>Acompanhe abaixo o checklist de documentos obrigatórios por escola. Clique no nome da escola para ver os detalhes.</p>
+<hr>
+
+<div class="accordion" id="accordionStatus">
+  {% for item in status_por_escola %}
+  <div class="card">
+    <div class="card-header" id="heading{{ item.escola.pk }}">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse{{ item.escola.pk }}" aria-expanded="false" aria-controls="collapse{{ item.escola.pk }}" style="text-decoration: none; color: #333;">
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-weight: bold;">{{ item.escola.nome_fantasia }}</span>
+            <span>
+                {% if item.entregues_count == item.total_obrigatorio %}
+                    <span class="badge badge-success">Completo ({{ item.entregues_count }}/{{ item.total_obrigatorio }})</span>
+                {% else %}
+                    <span class="badge badge-warning">Pendente ({{ item.entregues_count }}/{{ item.total_obrigatorio }})</span>
+                {% endif %}
+            </span>
+          </div>
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapse{{ item.escola.pk }}" class="collapse" aria-labelledby="heading{{ item.escola.pk }}" data-parent="#accordionStatus">
+      <div class="card-body">
+        <ul class="list-group">
+            {% for doc in item.checklist %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ doc.label }}
+                {% if doc.entregue %}
+                    <span class="badge badge-success">Entregue</span>
+                {% else %}
+                    <span class="badge badge-danger">Faltante</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <p>Nenhuma escola cadastrada.</p>
+  {% endfor %}
+</div>
+{% endblock %}
