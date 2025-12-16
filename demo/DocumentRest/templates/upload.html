@@ -60,8 +60,9 @@
         {% for error in form.vencimento_ano.errors %}
           <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
+    </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Enviar Documento</button>
+    <button type="submit" class="btn btn-success btn-lg btn-block mt-4">Enviar Documento</button>
   </form>
 
 {% endblock %}
