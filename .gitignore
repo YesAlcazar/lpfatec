@@ -29,7 +29,8 @@ Thumbs.db
 *.log
 *.sqlite3
 media/
-static/
+# Removed ignore because we want people to test it
+# static/
 
 # Environment variables
 .env
