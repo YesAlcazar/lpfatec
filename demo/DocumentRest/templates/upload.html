@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %} Envio de Arquivos {% endblock %}
+{% block content %}
+  {% if escola_selecionada %}
+    <h2>Envio de Documentos para: <strong>{{ escola_selecionada.nome_fantasia }}</strong></h2>
+  {% else %}
+    <h2>Envio de Documentos</h2>
+  {% endif %}
+  <p>Utilize o formulário abaixo para enviar um novo documento. Uma vez enviado, o arquivo não poderá ser alterado ou removido pelo sistema.</p>
+  <hr>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% for field in form %}
+      <div class="form-group" {% if field.name == 'outro_tipo_documento' %} id="outro_tipo_container" style="display: none;" {% endif %}>
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="invalid-feedback d-block">
+            {{ error }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary mt-3">Enviar Documento</button>
+  </form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const tipoDocSelect = document.getElementById('id_tipo_documento');
+    const outroTipoContainer = document.getElementById('outro_tipo_container');
+    const outroTipoInput = document.getElementById('id_outro_tipo_documento');
+
+    if (!form || !tipoDocSelect || !outroTipoContainer || !outroTipoInput) return;
+
+    function toggleOutroTipo() {
+      if (tipoDocSelect.value === 'OUTRO') {
+        outroTipoContainer.style.display = 'block';
+      } else {
+        outroTipoContainer.style.display = 'none';
+      }
+    }
+
+    // Adiciona validação no envio do formulário para não perder o arquivo
+    form.addEventListener('submit', function(event) {
+      if (tipoDocSelect.value === 'OUTRO' && !outroTipoInput.value.trim()) {
+        // Impede o envio do formulário
+        event.preventDefault();
+        // Avisa o usuário e foca no campo obrigatório
+        alert('O campo "Especificar (se \'Outro\')" é obrigatório.');
+        outroTipoInput.focus();
+      }
+    });
+
+    toggleOutroTipo();
+    tipoDocSelect.addEventListener('change', toggleOutroTipo);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %} Links de Upload por Escola {% endblock %}
+{% block content %}
+  <h2>Links de Upload por Escola</h2>
+  <p>Cada escola possui um link único para o envio de documentos. O campo "Escola" será preenchido e bloqueado automaticamente ao usar o link.</p>
+  <hr>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Nome Fantasia</th>
+          <th scope="col">CNPJ</th>
+          <th scope="col">Link de Upload Exclusivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for escola in escolas %}
+        <tr>
+          <td>{{ escola.nome_fantasia }}</td>
+          <td>{{ escola.cnpj }}</td>
+          <td>
+            <div class="input-group">
+              <input type="text" class="form-control" value="{% url 'DocumentRest:upload_documento' %}?id={{ escola.access_code }}" id="link-{{ forloop.counter }}" readonly>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('link-{{ forloop.counter }}')">Copiar</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(elementId) {
+  var copyText = document.getElementById(elementId);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /* For mobile devices */
+  navigator.clipboard.writeText(copyText.value).then(function() {
+    alert("Link copiado!");
+  }, function(err) {
+    alert("Não foi possível copiar o link.");
+  });
+}
+</script>
+{% endblock %}

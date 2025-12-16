@@ -1,3 +1,24 @@
 {% extends "base.html" %}
-{% block title %} Home Page {% endblock %}
-{% block content %}  <p> This is the Home Page </p> {% endblock %} 
+{% block title %} Painel da Secretaria {% endblock %}
+{% block content %}
+  <div class="jumbotron jumbotron-fluid py-5">
+    <div class="container">
+      <h1 class="display-4">Portal de Documentos</h1>
+      <p class="lead">Bem-vindo ao sistema de gerenciamento de documentos da Secretaria de Educação. Utilize o menu acima para navegar.</p>
+    </div>
+  </div>
+
+  <h4>Últimos Documentos Enviados</h4>
+  {% if documentos_recentes %}
+    <div class="list-group">
+      {% for doc in documentos_recentes %}
+        <a href="{{ doc.arquivo.url }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          {{ doc }}
+          <span class="badge badge-primary badge-pill">{{ doc.data_hora_envio|date:"d/m/Y H:i" }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Nenhum documento foi enviado ainda.</p>
+  {% endif %}
+{% endblock %}
