@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -9,62 +10,13 @@
       {% endblock %}
     </title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <style>
-      body {
-        background-color: #f0f0f0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      .site-header {
-        background-color: white;
-        padding: 15px 0;
-        border-bottom: 3px solid #003663;
-      }
-      .site-header .logo {
-        max-height: 70px;
-      }
-      .site-header h1 {
-        color: #003663;
-        font-size: 1.8rem;
-        font-weight: bold;
-        margin: 0;
-      }
-      .navbar {
-        background-color: #003663; /* Azul do site de referência */
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-      .navbar .nav-link {
-        color: white !important;
-        font-weight: 500;
-        text-transform: uppercase;
-        padding: 1rem 1.5rem;
-      }
-      .navbar .nav-link:hover, .navbar .nav-item.active .nav-link {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-      .content-container {
-        background-color: white;
-        padding: 30px;
-        margin-top: 20px;
-        border-radius: 5px;
-        flex-grow: 1;
-      }
-      .site-footer {
-        background-color: #343a40;
-        color: white;
-        padding: 20px 0;
-        text-align: center;
-        margin-top: auto;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
   </head>
   <body>
     <header class="site-header">
       <div class="container d-flex justify-content-between align-items-center">
         <a href="{% url 'DocumentRest:home' %}">
-          <img src="https://www.carapicuiba.sp.gov.br/images/logo.svg" alt="Logo Prefeitura de Carapicuíba" class="logo">
+          <img src="{% static 'images/logo.svg' %}" alt="Logo Prefeitura de Carapicuíba" class="logo">
         </a>
         <h1>Secretaria de Educação</h1>
       </div>
@@ -98,7 +50,13 @@
               <a class="nav-link" href="{% url 'DocumentRest:listar_escolas' %}">Links por Escola</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Contato</a>
+              <a class="nav-link" href="{% url 'DocumentRest:arquivos_a_vencer' %}">Arquivos a Vencer</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DocumentRest:contato' %}">Contato</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DocumentRest:ouvidoria' %}">Ouvidoria</a>
             </li>
           </ul>
         </div>

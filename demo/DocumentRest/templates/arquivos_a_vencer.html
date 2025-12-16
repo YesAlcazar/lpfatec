@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} Arquivos a Vencer {% endblock %}
+{% block content %}
+  <h2>Arquivos Vencidos ou a Vencer nos Próximos 3 Meses</h2>
+  <p>Lista de documentos que requerem atenção, ordenados por data de vencimento.</p>
+  <hr>
+
+  {% if escolas_com_vencimentos %}
+    {% for escola, documentos in escolas_com_vencimentos.items %}
+      <h4 class="mt-4 mb-3">Escola: {{ escola.nome_fantasia }}</h4>
+      <div class="list-group">
+        {% for doc in documentos %}
+          {% comment %} Determina a cor com base no status de vencimento {% endcomment %}
+          {% if doc.data_vencimento < hoje %}
+            <a href="{{ doc.arquivo.url }}" target="_blank" class="list-group-item list-group-item-action list-group-item-danger d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ doc }}</strong><br>
+                <small>Vencido em: {{ doc.data_vencimento|date:"d/m/Y" }}</small>
+              </div>
+              <span class="badge badge-danger badge-pill">VENCIDO</span>
+            </a>
+          {% else %}
+            <a href="{{ doc.arquivo.url }}" target="_blank" class="list-group-item list-group-item-action list-group-item-warning d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ doc }}</strong><br>
+                <small>Vence em: {{ doc.data_vencimento|date:"d/m/Y" }}</small>
+              </div>
+              <span class="badge badge-warning badge-pill">A VENCER</span>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-success" role="alert">
+      <h4 class="alert-heading">Tudo em ordem!</h4>
+      <p>Nenhum documento está vencido ou irá vencer nos próximos 3 meses.</p>
+    </div>
+  {% endif %}
+{% endblock %}

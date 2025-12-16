@@ -65,6 +65,7 @@ class Documento(models.Model):
         verbose_name="Especificar (se 'Outro')"
     )
     escola = models.ForeignKey(Escola, on_delete=models.PROTECT, related_name='documentos', verbose_name="Escola")
+    data_vencimento = models.DateField(verbose_name="Data de Vencimento")
     responsavel_upload = models.CharField(max_length=100, verbose_name="Responsável pelo Upload")
     data_hora_envio = models.DateTimeField(auto_now_add=True, verbose_name="Data e Hora de Envio")
 

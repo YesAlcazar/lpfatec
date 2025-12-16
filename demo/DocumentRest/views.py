@@ -3,6 +3,8 @@ from django.contrib import messages
 from .forms import DocumentoForm
 from .models import Documento, Escola
 import base64
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 # Create your views here.
 def home(request):
@@ -48,3 +50,32 @@ def listar_escolas(request):
         # Gera o código de acesso Base64 para cada escola
         escola.access_code = base64.b64encode(escola.cnpj.encode('utf-8')).decode('utf-8')
     return render(request, 'escolas_list.html', {'escolas': escolas})
+
+def contato(request):
+    return render(request, 'contato.html')
+
+def ouvidoria(request):
+    return render(request, 'ouvidoria.html')
+
+def arquivos_a_vencer(request):
+    hoje = timezone.now().date()
+    # Define o período de busca: até 3 meses no futuro a partir de hoje
+    tres_meses_futuro = hoje + relativedelta(months=3)
+
+    # Filtra documentos vencidos ou que vencerão nos próximos 3 meses
+    documentos = Documento.objects.filter(
+        data_vencimento__lte=tres_meses_futuro
+    ).select_related('escola').order_by('data_vencimento')
+
+    # Agrupa os documentos por escola para facilitar a exibição
+    escolas_com_vencimentos = {}
+    for doc in documentos:
+        if doc.escola not in escolas_com_vencimentos:
+            escolas_com_vencimentos[doc.escola] = []
+        escolas_com_vencimentos[doc.escola].append(doc)
+
+    context = {
+        'escolas_com_vencimentos': escolas_com_vencimentos,
+        'hoje': hoje,
+    }
+    return render(request, 'arquivos_a_vencer.html', context)

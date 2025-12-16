@@ -24,7 +24,7 @@ class ContatoAdmin(admin.ModelAdmin):
 
 @admin.register(Documento)
 class DocumentoAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'responsavel_upload', 'data_hora_envio')
-    list_filter = ('tipo_documento', 'escola', 'data_hora_envio')
+    list_display = ('__str__', 'responsavel_upload', 'data_hora_envio', 'data_vencimento')
+    list_filter = ('tipo_documento', 'escola', 'data_hora_envio', 'data_vencimento')
     search_fields = ('responsavel_upload', 'escola__nome_fantasia')
     date_hierarchy = 'data_hora_envio'

@@ -12,7 +12,8 @@
   <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
 
-    {% for field in form %}
+    {% for field in form.visible_fields %}
+      {% if field.name != 'tipo_vencimento' and field.name != 'vencimento_data' and field.name != 'vencimento_ano' %}
       <div class="form-group" {% if field.name == 'outro_tipo_documento' %} id="outro_tipo_container" style="display: none;" {% endif %}>
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
@@ -25,7 +26,40 @@
           </div>
         {% endfor %}
       </div>
+      {% endif %}
     {% endfor %}
+
+    <hr>
+    <h5>Data de Vencimento</h5>
+    <div class="form-group">
+        <label>{{ form.tipo_vencimento.label }}</label>
+        <div>
+            {% for radio in form.tipo_vencimento %}
+                <div class="form-check form-check-inline">
+                    {{ radio.tag }}
+                    <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        {% for error in form.tipo_vencimento.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group" id="vencimento_data_container" style="display: none;">
+        <label for="{{ form.vencimento_data.id_for_label }}">{{ form.vencimento_data.label }}</label>
+        {{ form.vencimento_data }}
+        {% for error in form.vencimento_data.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group" id="vencimento_ano_container" style="display: none;">
+        <label for="{{ form.vencimento_ano.id_for_label }}">{{ form.vencimento_ano.label }}</label>
+        {{ form.vencimento_ano }}
+        {% for error in form.vencimento_ano.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
 
     <button type="submit" class="btn btn-primary mt-3">Enviar Documento</button>
   </form>
@@ -35,34 +69,57 @@
 {% block extra_js %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // --- Lógica para o campo "Outro" ---
     const form = document.querySelector('form');
     const tipoDocSelect = document.getElementById('id_tipo_documento');
     const outroTipoContainer = document.getElementById('outro_tipo_container');
     const outroTipoInput = document.getElementById('id_outro_tipo_documento');
 
-    if (!form || !tipoDocSelect || !outroTipoContainer || !outroTipoInput) return;
+    if (form && tipoDocSelect && outroTipoContainer && outroTipoInput) {
+        function toggleOutroTipo() {
+          if (tipoDocSelect.value === 'OUTRO') {
+            outroTipoContainer.style.display = 'block';
+          } else {
+            outroTipoContainer.style.display = 'none';
+          }
+        }
 
-    function toggleOutroTipo() {
-      if (tipoDocSelect.value === 'OUTRO') {
-        outroTipoContainer.style.display = 'block';
-      } else {
-        outroTipoContainer.style.display = 'none';
-      }
+        form.addEventListener('submit', function(event) {
+          if (tipoDocSelect.value === 'OUTRO' && !outroTipoInput.value.trim()) {
+            event.preventDefault();
+            alert('O campo "Especificar (se \'Outro\')" é obrigatório.');
+            outroTipoInput.focus();
+          }
+        });
+
+        toggleOutroTipo();
+        tipoDocSelect.addEventListener('change', toggleOutroTipo);
     }
 
-    // Adiciona validação no envio do formulário para não perder o arquivo
-    form.addEventListener('submit', function(event) {
-      if (tipoDocSelect.value === 'OUTRO' && !outroTipoInput.value.trim()) {
-        // Impede o envio do formulário
-        event.preventDefault();
-        // Avisa o usuário e foca no campo obrigatório
-        alert('O campo "Especificar (se \'Outro\')" é obrigatório.');
-        outroTipoInput.focus();
-      }
-    });
+    // --- Lógica para os campos de vencimento ---
+    const tipoVencimentoRadios = document.querySelectorAll('input[name="tipo_vencimento"]');
+    const dataContainer = document.getElementById('vencimento_data_container');
+    const anoContainer = document.getElementById('vencimento_ano_container');
 
-    toggleOutroTipo();
-    tipoDocSelect.addEventListener('change', toggleOutroTipo);
+    if (tipoVencimentoRadios.length && dataContainer && anoContainer) {
+        function toggleVencimentoFields() {
+            const selectedType = document.querySelector('input[name="tipo_vencimento"]:checked');
+            if (selectedType) {
+                dataContainer.style.display = selectedType.value === 'DATA' ? 'block' : 'none';
+                anoContainer.style.display = selectedType.value === 'ANO' ? 'block' : 'none';
+            } else {
+                dataContainer.style.display = 'none';
+                anoContainer.style.display = 'none';
+            }
+        }
+
+        tipoVencimentoRadios.forEach(radio => {
+            radio.addEventListener('change', toggleVencimentoFields);
+        });
+
+        // Verifica o estado inicial ao carregar a página (útil em caso de erro de validação)
+        toggleVencimentoFields();
+    }
   });
 </script>
 {% endblock %}
