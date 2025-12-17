@@ -54,7 +54,13 @@ def upload_documento(request):
     return render(request, 'upload.html', {'form': form, 'escola_selecionada': escola_instance})
 
 def listar_escolas(request):
-    escolas = Escola.objects.all().order_by('nome_fantasia')
+    escolas_qs = Escola.objects.all()
+
+    def natural_keys(text):
+        return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', text)]
+
+    escolas = sorted(escolas_qs, key=lambda x: natural_keys(x.nome_fantasia))
+
     for escola in escolas:
         # Gera o código de acesso Base64 para cada escola
         escola.access_code = base64.b64encode(escola.cnpj.encode('utf-8')).decode('utf-8')

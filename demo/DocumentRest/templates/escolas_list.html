@@ -21,8 +21,9 @@
           <td>{{ escola.cnpj }}</td>
           <td>
             <div class="input-group">
-              <input type="text" class="form-control" value="{% url 'DocumentRest:upload_documento' %}?id={{ escola.access_code }}" id="link-{{ forloop.counter }}" readonly>
+              <input type="text" class="form-control" value="{{ request.scheme }}://{{ request.get_host }}{% url 'DocumentRest:upload_documento' %}?id={{ escola.access_code }}" id="link-{{ forloop.counter }}" readonly>
               <div class="input-group-append">
+                <a href="{% url 'DocumentRest:upload_documento' %}?id={{ escola.access_code }}" class="btn btn-outline-primary" target="_blank">Abrir</a>
                 <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('link-{{ forloop.counter }}')">Copiar</button>
               </div>
             </div>
